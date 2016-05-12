@@ -1,0 +1,34 @@
+commit 63a1f1493bfbaf7e55eb7e20b3791fc8b14cf92d
+Author: Rogier Wolff <R.E.Wolff@BitWizard.nl>
+Date:   Mon Dec 29 09:22:46 2014 +0100
+
+    added use-default-colors...
+
+diff --git a/configure.ac b/configure.ac
+index d5d1b0e..7199781 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -34,6 +34,9 @@ AC_CHECK_FUNC(initscr, ,
+ 	AC_DEFINE(NO_CURSES, 1, Define if you don't have the curses libraries available.)
+ 	CURSES_OBJ=))))
+ 
++AC_CHECK_LIB(ncurses, use_default_colors, 
++  AC_DEFINE(HAVE_USE_DEFAULT_COLORS, 1, [Define this if your curses library has the use_default_colors() command.]))
++
+ AC_CHECK_FUNCS(attron fcntl)
+ 
+ AC_CHECK_LIB(m, floor, , AC_MSG_ERROR(No math library found))
+diff --git a/curses.c b/curses.c
+index 3904cb1..02b7937 100644
+--- a/curses.c
++++ b/curses.c
+@@ -701,6 +701,9 @@ void mtr_curses_open(void)
+   raw();
+   noecho(); 
+   start_color();
++#ifdef HAVE_USE_DEFAULT_COLORS
++  use_default_colors();
++#endif
+   int i;
+   for (i = 0; i < 8; i++)
+       init_pair(i+1, i, 0);
